@@ -1,4 +1,4 @@
-# 2023 WACV HDR Video Quality Measurement Grand Challenge
+# Video Quality Measurement Grand Challenge Submission Template
 
 ## Code submission
 
@@ -6,22 +6,21 @@ In order to get your final ranking on the private test set, you have to submit a
 
 If your model is on Matlab or other platform that can not run inside docker. Please write it as python if possible and submit the docker repo. We only accept docker format submission for final evaluation.
 
-Please read and accept [this terms](https://sites.google.com/view/wacv2023-workshop-quality-va/competition#h.n0xwm1mc89cg) before submission. 
+Please read and accept [this terms](https://sites.google.com/view/icme25-vqm-gc/rules#h.n0xwm1mc89cg) before submission. 
 
-Your submission should be a **Zip file** with only **one single folder** within that Zip file. The file size should be **less than 1Gb**. Please use the following link for submission.
-https://forms.gle/NuxvG8usFRtRiraL9
+Your submission should be a **Zip file** with only **one single folder** within that Zip file. The file size should be **less than 1Gb**. Please use the this [link]() for submission.
 
-This [repo's Zip](https://github.com/Easoncyx/2023_wacv_vqm_challenge/archive/refs/heads/main.zip) is an example submission that works with our test API. As long as your Docker follow the command line interface described in this document, you don't have to start with our example.
+This [repo's Zip](https://github.com/Easoncyx/vqm_challenge/archive/refs/heads/main.zip) is an example submission that works with our test API. As long as your Docker follow the command line interface described in this document, you don't have to start with our example.
 
 ## Hardware environment
 
-All submitted docker solutions will be evaluated on a standard AWS EC2 instance (p3.2xlarge) with the following spec:
+All submitted docker solutions will be evaluated on a standard AWS EC2 instance (g6e.2xlarge) with the following spec:
 
-GPU: NVIDIA Tesla V100 GPU 16GB
+GPU: NVIDIA L40S GPU
 
-CPU: 8 vCPU High frequency Intel Xeon Scalable Processor (Broadwell E5-2686 v4)
+CPU: 8 vCPU
 
-Memory: 61GB
+Memory: 64GB
 
 Storage: EBS GP3 SSD 256 GB 
 
@@ -29,7 +28,7 @@ Storage: EBS GP3 SSD 256 GB
 
 ## Video decoding
 
-The input distorted and reference HDR videos are all encoded with X265 in MP4 format in `yuv420p10le` format. You can use whatever works best for your model to decode the video and load images. If you need metadata such as video resolution and framerate etc, you can use ffprobe to parse the input MP4 video.
+The input distorted and reference videos are all encoded with X265 in MP4 format in `yuv420p` or `yuv420p10le` format. You can use whatever works best for your model to decode the video and load images. If you need metadata such as video resolution and framerate etc, you can use ffprobe to parse the input MP4 video.
 
 The `ffmpeg` and `ffprobe` are installed in this example `Dockerfile`. The following funtion is useful to parse the metadata from video where the `key` can be any string in this list: `[width, height, r_frame_rate, pix_fmt, display_aspect_ratio]`.
 

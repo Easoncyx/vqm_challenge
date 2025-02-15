@@ -1,6 +1,6 @@
 
-FROM ubuntu:20.04
-# FROM nvidia/cuda:11.6.2-base-ubuntu20.04
+FROM ubuntu:24.04
+# FROM nvidia/cuda:12.8.0-base-ubuntu24.04
 
 ENV LANG C.UTF-8
 # setup timezone
