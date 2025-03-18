@@ -65,28 +65,26 @@ ffmpeg -y -nostdin -hide_banner \
 For python application, the Dockerfile ENTRYPOINT should be your interpreter plus your scripts/module. For example, 
 
 ```dockerfile
-ENTRYPOINT ["python3","./your_script.py"]
+ENTRYPOINT ["uv","run","./your_script.py"]
 # or
-ENTRYPOINT ["python3","-m","your_module"]
+ENTRYPOINT ["uv","run","-m","your_module"]
 ```
 
 Within `your_script.py` or `your_module` `__main__.py` file, you can use `argparse` package or directly reading `sys.argv` to get the input video path as defined in section "Docker command line interface". 
 
 If you need a template to start, an example python environment setup with some pre-installed packages (numpy, scipy, ffmpeg) and an empty python package named `vqm` is given in this repo. You don't have to use this example as long as your docker application follows the command line internface requirements.
 
-In this example, [Poetry](https://python-poetry.org/docs/#installation) is used to config the local python virtual environment. You can used the following commands to manage packages you need and export them to the requirements file for Dockerfile to build the same environment. 
+In this example, [UV](https://docs.astral.sh/uv/) is used to config the local python virtual environment. You can used the following commands to manage packages you need and they will be automatically used by the Dockerfile to build the same environment. 
 ```bash
 # create new vitrual environment
-poetry install
+uv sync
 
 # install package
-poetry add numpy
-
-# export to requirement.txt
-poetry export -f requirements.txt --output requirements.txt
+uv add numpy scipy pandas
 
 # to test your model locally without docker
-poetry run vqm [pvs_video] [ref_video] [result_file]
+uv run -m vqm [pvs_video] [ref_video] [result_file]
+
 ```
 
 
