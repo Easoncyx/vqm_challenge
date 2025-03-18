@@ -2,15 +2,15 @@
 
 ## Code submission
 
-In order to get your final ranking on the private test set, you have to submit a valid runnable model using docker. You model can be a python or C/C++ or other executable console application that takes commands lines arguments as input. 
+In order to get your final ranking on the private test set, you have to submit a valid runnable model  and it's inferencing code using docker. You model can be a python or C/C++ or other executable console application that takes commands lines arguments as input. 
 
 If your model is on Matlab or other platform that can not run inside docker. Please write it as python if possible and submit the docker repo. We only accept docker format submission for final evaluation.
 
 Please read and accept [this terms](https://sites.google.com/view/icme25-vqm-gc/rules#h.n0xwm1mc89cg) before submission. 
 
-Your submission should be a **Zip file** with only **one single folder** within that Zip file. The file size should be **less than 1Gb**. Please use the this [link]() for submission.
+Your submission should be a **Zip file** with only **one single folder** within that Zip file. The file size should be **less than 1Gb**. Please use the this [link](https://forms.gle/caqFttuJ7ynruXz18) for submission.
 
-This [repo's Zip](https://github.com/Easoncyx/vqm_challenge/archive/refs/heads/main.zip) is an example submission that works with our test API. As long as your Docker follow the command line interface described in this document, you don't have to start with our example.
+This [repo's Zip](https://github.com/Easoncyx/vqm_challenge/archive/refs/heads/main.zip) is an example submission that works with our test API. As long as your Docker follow the same command line interface described in this document, you don't have to start with our example.
 
 ## Hardware environment
 
@@ -28,7 +28,7 @@ Storage: EBS GP3 SSD 256 GB
 
 ## Video decoding
 
-The input distorted and reference videos are all encoded with X265 in MP4 format in `yuv420p` or `yuv420p10le` format. You can use whatever works best for your model to decode the video and load images. If you need metadata such as video resolution and framerate etc, you can use ffprobe to parse the input MP4 video.
+The input distorted and reference videos are all encoded with X265 in MP4 format in `yuv420p` or `yuv420p10le` format. You can use whatever works best for your model to decode the video and load images. If you need metadata such as video resolution and framerate etc, you can use ffprobe to parse the input MP4 video. This example starter code have ffmpeg and ffprobe installed and use FFMPEG with VMAF as an example to decode the video calculate the score.
 
 The `ffmpeg` and `ffprobe` are installed in this example `Dockerfile`. The following funtion is useful to parse the metadata from video where the `key` can be any string in this list: `[width, height, r_frame_rate, pix_fmt, display_aspect_ratio]`.
 
@@ -84,7 +84,6 @@ uv add numpy scipy pandas
 
 # to test your model locally without docker
 uv run -m vqm [pvs_video] [ref_video] [result_file]
-
 ```
 
 
@@ -125,7 +124,7 @@ For full reference (FR) model:
 
 After taking input videos, your model should output a single result file to the location specified by command line option `resulf_file`. You do NOT need to add `txt` extension to the path given by the command line. Full output file path will be given by the command line input.
 
-The result file is **a txt file with only one float point number (MOS instead of DMOS) ranging from 0 to 100 in a single line**. The number should represent your model's prediction of the input video quality. 
+The result file is **a txt file with only one float point number (MOS instead of DMOS) ranging from 0 to 100 (or 0 to 10) in a single line**. The number should represent your model's prediction of the input video quality. 
 
 
 
@@ -165,14 +164,26 @@ The shell script `docker_run.sh`  will be used to test your model on private tes
 **You should use the following python code to test your model with the `docker_run.sh` script on the public test set to make sure it work with your evaluation before submission. If you container have any issue during testing on private test set, you will be asked to make modification and provide a workable docker application.**
 
 ```Python
-docker_path = './docker_run.sh'
-cmd = f"{docker_path} {video_folder} {pvs_name} {ref_name} {reports_folder} {report_file} {cache_folder} > {runtime_log_path} 2>&1"
-subprocess.check_output(cmd, shell=True)
+# to test your model locally with docker
+docker build -t vqm-test .
+sudo ./docker_run.sh {video_folder} {pvs_video} {ref_video} {report_folder} {result_file} {tmp_folder}
+
+# Build the docker image
+cd {this_repo_path}
+docker build -t vqm-test .
+# Test on one HDR video
+sudo ./docker_run.sh {video_path}/train_videos 1_Basketball_Afternoon_HDR10_960x540_800k.mp4 1_Basketball_Afternoon_HDR10_3840x2160_50000k.mp4 {output_path}/reports/ output.txt {output_path}/tmp vqm-test
+# You should also test one SDR video since you model will work on both SDR and HDR videos.
+sudo ./docker_run.sh {video_path}/train_videos 1_Basketball_Afternoon_SDR_960x540_800k.mp4 1_Basketball_Afternoon_SDR_3840x2160_50000k.mp4 {output_path}/reports/ output.txt {output_path}/tmp vqm-test
+
 ```
+
+Make sure the output.txt file is created in {output_path}/reports/output.txt and have one float point number.
+
 
 - `video_folder` is where distored video and reference video are located, they should be in the same folder with file name as `pvs_name` and `ref_name`.
 - `reports_folder` is an empty folder where the report file named `report_file` will be written by your application
-- `cache_folder` is an empty folder for your application, if not used you can give any empty folder here.
+- `tmp_folder` is an empty folder for your application to store temporary files like decoded video, if not used you can give any empty folder here.
 
 
 ### Evaluation metric and non-linear mapping 
