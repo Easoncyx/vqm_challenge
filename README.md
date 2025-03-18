@@ -161,7 +161,9 @@ The shell script `docker_run.sh`  will be used to test your model on private tes
 - Ouput empty folder will be mounted on `/data/reports` to receive your models output score txt file that have one float point number ranging from [0,100].
 - Temporary empty folder will be mounted on `/data/tmp` for your own usage. During evaluation process, you can use the `/data/tmp` inside docker as a location to store local file. For example, if you need to decode the input video into Y4M or image, you can store the file at this location. An external disk will be mounted on the docker at `/data` to store the input file and output result. 
 
-**You should use the following python code to test your model with the `docker_run.sh` script on the public test set to make sure it work with your evaluation before submission. If you container have any issue during testing on private test set, you will be asked to make modification and provide a workable docker application.**
+## IMPORTANT: Local Testing before submission
+
+**You should use the following CLI to test your model with the `docker_run.sh` script on at least one pair of HDR and SDR videos from the training set to make sure it work with your evaluation before submission. If you container have any issue during testing on private test set, you will be asked to make modification and provide a workable docker application.**
 
 ```Python
 # to test your model locally with docker
